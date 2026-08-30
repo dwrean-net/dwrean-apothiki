@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -35,10 +35,46 @@ jobs:
           New-Item -ItemType Directory -Force -Path "portable\data\images" | Out-Null
           Copy-Item "dist\dwrean Apothiki.exe" "portable\dwrean Apothiki.exe" -Force
 
-      - name: Upload portable application
+      - name: Create release ZIP
+        shell: pwsh
+        run: |
+          if (Test-Path "dwrean-Apothiki-Windows-v1.1.1.zip") { Remove-Item "dwrean-Apothiki-Windows-v1.1.1.zip" -Force }
+          Compress-Archive -Path "portable\*" -DestinationPath "dwrean-Apothiki-Windows-v1.1.1.zip" -CompressionLevel Optimal
+
+      - name: Upload portable application artifact
         uses: actions/upload-artifact@v4
         with:
           name: dwrean-Apothiki-Windows-v1.1.1
           path: portable/
           if-no-files-found: error
           retention-days: 30
+
+      - name: Publish GitHub Release v1.1.1
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $notes = @"
+          ## dwrean Αποθήκη 1.1.1
+
+          Portable εφαρμογή διαχείρισης αποθήκης για Windows.
+
+          ### Περιλαμβάνει
+          - Καταχώριση υλικών, κωδικών, θέσεων και αποθηκών
+          - Προαιρετική φωτογραφία για κάθε υλικό
+          - Μεγέθυνση φωτογραφίας με κλικ
+          - Αναζήτηση και φίλτρα
+          - Εκτύπωση επιλεγμένων ή φιλτραρισμένων καταστάσεων
+          - Εξαγωγή CSV
+          - Δημιουργία και επαναφορά Backup
+          - Ενσωματωμένη Βοήθεια και Πληροφορίες εφαρμογής
+
+          Δεν απαιτείται εγκατάσταση. Αποσυμπίεσε το ZIP και εκτέλεσε το `dwrean Apothiki.exe`.
+          "@
+
+          gh release view v1.1.1 --repo $env:GITHUB_REPOSITORY *> $null
+          if ($LASTEXITCODE -eq 0) {
+            gh release upload v1.1.1 "dwrean-Apothiki-Windows-v1.1.1.zip" --clobber --repo $env:GITHUB_REPOSITORY
+          } else {
+            gh release create v1.1.1 "dwrean-Apothiki-Windows-v1.1.1.zip" --title "dwrean Αποθήκη 1.1.1" --notes $notes --target main --repo $env:GITHUB_REPOSITORY
+          }
