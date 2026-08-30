@@ -31,14 +31,14 @@ jobs:
       - name: Build portable EXE
         shell: pwsh
         run: |
-          python -m PyInstaller --noconfirm --clean --onefile --windowed --name "dwrean Apothiki" app.py
+          python -m PyInstaller --noconfirm --clean --onefile --windowed --name "dwrean Apothiki" app_v111.py
           New-Item -ItemType Directory -Force -Path "portable\data\images" | Out-Null
           Copy-Item "dist\dwrean Apothiki.exe" "portable\dwrean Apothiki.exe" -Force
 
       - name: Upload portable application
         uses: actions/upload-artifact@v4
         with:
-          name: dwrean-Apothiki-Windows
+          name: dwrean-Apothiki-Windows-v1.1.1
           path: portable/
           if-no-files-found: error
           retention-days: 30
