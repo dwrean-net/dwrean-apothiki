@@ -79,9 +79,11 @@ jobs:
           Portable εφαρμογή διαχείρισης αποθήκης για Windows.
 
           ### Τελευταίες βελτιώσεις
-          - Ανανεωμένη ταυτότητα του dwrean Αποθήκη μέσα στην εφαρμογή
-          - Διατηρούνται οι συντομεύσεις Ctrl+C, Ctrl+V, Ctrl+X και Ctrl+A
-          - Διατηρούνται φωτογραφίες υλικών, φίλτρα, εκτυπώσεις, CSV και Backup/Επαναφορά
+          - Προστέθηκε πεδίο «Ποσότητα» σε κάθε υλικό
+          - Η ποσότητα εμφανίζεται στον πίνακα, στις εκτυπώσεις και στην εξαγωγή CSV
+          - Οι υπάρχουσες βάσεις αναβαθμίζονται αυτόματα χωρίς απώλεια δεδομένων
+          - Η νέα καταχώριση ξεκινά με ποσότητα 1 και επιτρέπεται ποσότητα 0 για υλικό εκτός αποθέματος
+          - Διατηρούνται φωτογραφίες υλικών, φίλτρα, Backup/Επαναφορά και οι συντομεύσεις Ctrl+C/Ctrl+V
           - Portable λειτουργία χωρίς εγκατάσταση
 
           Αποσυμπίεσε το ZIP και εκτέλεσε το `dwrean Apothiki.exe`.
@@ -89,6 +91,7 @@ jobs:
 
           gh release view $tag --repo $env:GITHUB_REPOSITORY *> $null
           if ($LASTEXITCODE -eq 0) {
+            gh release edit $tag --title "dwrean Αποθήκη $version" --notes $notes --repo $env:GITHUB_REPOSITORY
             gh release upload $tag $zip --clobber --repo $env:GITHUB_REPOSITORY
           } else {
             gh release create $tag $zip --title "dwrean Αποθήκη $version" --notes $notes --target main --repo $env:GITHUB_REPOSITORY
