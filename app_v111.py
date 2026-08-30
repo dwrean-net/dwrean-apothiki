@@ -2,10 +2,96 @@ import tkinter as tk
 from tkinter import ttk
 import app as core
 
-core.APP_VERSION = "1.1.2"
+core.APP_VERSION = "1.1.3"
 
 
 class InventoryApp(core.InventoryApp):
+    def _bind_text_shortcuts(self, widget):
+        """Enable Windows-style clipboard shortcuts, including with Greek keyboard layout."""
+        widget.bind("<Control-KeyPress>", self._handle_text_shortcut, add="+")
+
+    def _handle_text_shortcut(self, event):
+        widget = event.widget
+        keycode = getattr(event, "keycode", 0)
+        keysym = str(getattr(event, "keysym", "")).lower()
+
+        # Windows virtual key codes keep working even when the active layout is Greek.
+        action = None
+        if keycode == 67 or keysym == "c":
+            action = "copy"
+        elif keycode == 86 or keysym == "v":
+            action = "paste"
+        elif keycode == 88 or keysym == "x":
+            action = "cut"
+        elif keycode == 65 or keysym == "a":
+            action = "select_all"
+
+        if action is None:
+            return None
+
+        if action == "select_all":
+            try:
+                widget.selection_range(0, tk.END)
+                widget.icursor(tk.END)
+            except (tk.TclError, AttributeError):
+                pass
+            return "break"
+
+        try:
+            first = widget.index("sel.first")
+            last = widget.index("sel.last")
+            has_selection = first != last
+        except (tk.TclError, AttributeError):
+            first = last = None
+            has_selection = False
+
+        if action == "copy":
+            if has_selection:
+                try:
+                    value = widget.get()
+                    selected_text = value[first:last]
+                    self.clipboard_clear()
+                    self.clipboard_append(selected_text)
+                    self.update_idletasks()
+                except (tk.TclError, AttributeError):
+                    pass
+            return "break"
+
+        try:
+            state = str(widget.cget("state"))
+        except (tk.TclError, AttributeError):
+            state = "normal"
+        if state in {"disabled", "readonly"}:
+            return "break"
+
+        if action == "cut":
+            if has_selection:
+                try:
+                    value = widget.get()
+                    selected_text = value[first:last]
+                    self.clipboard_clear()
+                    self.clipboard_append(selected_text)
+                    widget.delete(first, last)
+                    self.update_idletasks()
+                except (tk.TclError, AttributeError):
+                    pass
+            return "break"
+
+        if action == "paste":
+            try:
+                pasted_text = self.clipboard_get()
+            except tk.TclError:
+                return "break"
+            try:
+                if has_selection:
+                    widget.delete(first, last)
+                widget.insert(widget.index(tk.INSERT), pasted_text)
+            except (tk.TclError, AttributeError):
+                pass
+            return "break"
+
+        return None
+
     def _build_ui(self):
         # Grid layout: οι σταθερές ενότητες μένουν πάντα ορατές και
         # μόνο ο πίνακας αυξομειώνεται όταν αλλάζει το ύψος του παραθύρου.
@@ -26,7 +112,8 @@ class InventoryApp(core.InventoryApp):
         form = ttk.Frame(editor)
         form.pack(side="left", fill="both", expand=True)
 
-        photo_box = ttk.Frame(editor, width=210, height=275)
+        # Extra height guarantees that both photo buttons remain fully visible.
+        photo_box = ttk.Frame(editor, width=210, height=315)
         photo_box.pack(side="right", padx=(14, 0), anchor="n")
         photo_box.pack_propagate(False)
 
@@ -53,6 +140,7 @@ class InventoryApp(core.InventoryApp):
             else:
                 widget = ttk.Entry(form, textvariable=self.vars[key])
             widget.grid(row=1, column=col, sticky="ew", padx=4)
+            self._bind_text_shortcuts(widget)
             form.columnconfigure(col, weight=1)
 
         actions = ttk.Frame(form)
@@ -96,6 +184,7 @@ class InventoryApp(core.InventoryApp):
         ttk.Label(filters, text="Γενική αναζήτηση").grid(row=0, column=0, sticky="w", padx=4)
         search_entry = ttk.Entry(filters, textvariable=self.search_var)
         search_entry.grid(row=1, column=0, sticky="ew", padx=4)
+        self._bind_text_shortcuts(search_entry)
         search_entry.bind("<KeyRelease>", lambda _e: self.refresh())
 
         self.filter_vars = {
@@ -113,6 +202,7 @@ class InventoryApp(core.InventoryApp):
             ttk.Label(filters, text=label).grid(row=0, column=i, sticky="w", padx=4)
             combo = ttk.Combobox(filters, textvariable=self.filter_vars[key], state="readonly")
             combo.grid(row=1, column=i, sticky="ew", padx=4)
+            self._bind_text_shortcuts(combo)
             combo.bind("<<ComboboxSelected>>", lambda _e: self.refresh())
             self.filter_combos[key] = combo
 
