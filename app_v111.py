@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import app as core
 
-core.APP_VERSION = "1.1.3"
+core.APP_VERSION = "1.1.4"
 
 
 class InventoryApp(core.InventoryApp):
@@ -92,6 +92,24 @@ class InventoryApp(core.InventoryApp):
 
         return None
 
+    def _build_brand_title(self, parent):
+        """Text-only dwrean.net style branding: black 'dwrean', red 'Αποθήκη'."""
+        brand = ttk.Frame(parent)
+        brand.pack(side="left")
+        brand_font = ("Arial Black", 22)
+        ttk.Label(
+            brand,
+            text="dwrean",
+            font=brand_font,
+            foreground="#111111",
+        ).pack(side="left")
+        ttk.Label(
+            brand,
+            text=" Αποθήκη",
+            font=brand_font,
+            foreground="#c71920",
+        ).pack(side="left")
+
     def _build_ui(self):
         # Grid layout: οι σταθερές ενότητες μένουν πάντα ορατές και
         # μόνο ο πίνακας αυξομειώνεται όταν αλλάζει το ύψος του παραθύρου.
@@ -102,7 +120,7 @@ class InventoryApp(core.InventoryApp):
 
         header = ttk.Frame(outer)
         header.grid(row=0, column=0, sticky="ew", pady=(0, 8))
-        ttk.Label(header, text=core.APP_NAME, style="Header.TLabel").pack(side="left")
+        self._build_brand_title(header)
         self.stats_label = ttk.Label(header, text="", style="Muted.TLabel")
         self.stats_label.pack(side="right", padx=4)
 
