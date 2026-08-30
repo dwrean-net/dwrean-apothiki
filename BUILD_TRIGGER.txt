@@ -1,0 +1,1 @@
+Automatic Windows build enabled via GitHub Actions.
