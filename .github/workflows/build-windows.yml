@@ -43,39 +43,39 @@ jobs:
       - name: Create release ZIP
         shell: pwsh
         run: |
-          if (Test-Path "dwrean-Apothiki-Windows-v1.1.2.zip") { Remove-Item "dwrean-Apothiki-Windows-v1.1.2.zip" -Force }
-          Compress-Archive -Path "portable\*" -DestinationPath "dwrean-Apothiki-Windows-v1.1.2.zip" -CompressionLevel Optimal
+          if (Test-Path "dwrean-Apothiki-Windows-v1.1.3.zip") { Remove-Item "dwrean-Apothiki-Windows-v1.1.3.zip" -Force }
+          Compress-Archive -Path "portable\*" -DestinationPath "dwrean-Apothiki-Windows-v1.1.3.zip" -CompressionLevel Optimal
 
       - name: Upload portable application artifact
         uses: actions/upload-artifact@v4
         with:
-          name: dwrean-Apothiki-Windows-v1.1.2
+          name: dwrean-Apothiki-Windows-v1.1.3
           path: portable/
           if-no-files-found: error
           retention-days: 30
 
-      - name: Publish GitHub Release v1.1.2
+      - name: Publish GitHub Release v1.1.3
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           $notes = @"
-          ## dwrean Αποθήκη 1.1.2
+          ## dwrean Αποθήκη 1.1.3
 
           Portable εφαρμογή διαχείρισης αποθήκης για Windows.
 
           ### Τι νέο υπάρχει
-          - Το κάτω toolbar παραμένει πάντα ορατό όταν η εφαρμογή δεν είναι σε πλήρη ανάπτυξη
-          - Ο πίνακας προσαρμόζεται αυτόματα στο διαθέσιμο ύψος του παραθύρου
-          - Διατηρείται η τετράγωνη προεπισκόπηση φωτογραφίας και η μεγέθυνση με κλικ
-          - Περιλαμβάνονται αναζήτηση, φίλτρα, εκτυπώσεις, CSV και Backup/Επαναφορά
+          - Διορθώθηκε το κουμπί «Αφαίρεση φωτογραφίας», ώστε το κείμενό του να εμφανίζεται πάντα κανονικά
+          - Προστέθηκαν Ctrl+C, Ctrl+V, Ctrl+X και Ctrl+A στα πεδία κειμένου
+          - Οι συντομεύσεις λειτουργούν και με ενεργό ελληνικό πληκτρολόγιο στα Windows
+          - Παραμένει η προσαρμοζόμενη διάταξη με το κάτω toolbar πάντα ορατό
 
           Δεν απαιτείται εγκατάσταση. Αποσυμπίεσε το ZIP και εκτέλεσε το `dwrean Apothiki.exe`.
           "@
 
-          gh release view v1.1.2 --repo $env:GITHUB_REPOSITORY *> $null
+          gh release view v1.1.3 --repo $env:GITHUB_REPOSITORY *> $null
           if ($LASTEXITCODE -eq 0) {
-            gh release upload v1.1.2 "dwrean-Apothiki-Windows-v1.1.2.zip" --clobber --repo $env:GITHUB_REPOSITORY
+            gh release upload v1.1.3 "dwrean-Apothiki-Windows-v1.1.3.zip" --clobber --repo $env:GITHUB_REPOSITORY
           } else {
-            gh release create v1.1.2 "dwrean-Apothiki-Windows-v1.1.2.zip" --title "dwrean Αποθήκη 1.1.2" --notes $notes --target main --repo $env:GITHUB_REPOSITORY
+            gh release create v1.1.3 "dwrean-Apothiki-Windows-v1.1.3.zip" --title "dwrean Αποθήκη 1.1.3" --notes $notes --target main --repo $env:GITHUB_REPOSITORY
           }
