@@ -2,27 +2,30 @@ import tkinter as tk
 from tkinter import ttk
 import app as core
 
-core.APP_VERSION = "1.1.1"
+core.APP_VERSION = "1.1.2"
 
 
 class InventoryApp(core.InventoryApp):
     def _build_ui(self):
-        outer = ttk.Frame(self, padding=14)
+        # Grid layout: οι σταθερές ενότητες μένουν πάντα ορατές και
+        # μόνο ο πίνακας αυξομειώνεται όταν αλλάζει το ύψος του παραθύρου.
+        outer = ttk.Frame(self, padding=10)
         outer.pack(fill="both", expand=True)
+        outer.columnconfigure(0, weight=1)
+        outer.rowconfigure(3, weight=1)
 
         header = ttk.Frame(outer)
-        header.pack(fill="x", pady=(0, 10))
+        header.grid(row=0, column=0, sticky="ew", pady=(0, 8))
         ttk.Label(header, text=core.APP_NAME, style="Header.TLabel").pack(side="left")
         self.stats_label = ttk.Label(header, text="", style="Muted.TLabel")
         self.stats_label.pack(side="right", padx=4)
 
         editor = ttk.LabelFrame(outer, text=" Στοιχεία υλικού ", padding=10)
-        editor.pack(fill="x", pady=(0, 10))
+        editor.grid(row=1, column=0, sticky="ew", pady=(0, 8))
 
         form = ttk.Frame(editor)
         form.pack(side="left", fill="both", expand=True)
 
-        # Σταθερό ύψος ώστε η φωτογραφία να μην συμπιέζεται
         photo_box = ttk.Frame(editor, width=210, height=275)
         photo_box.pack(side="right", padx=(14, 0), anchor="n")
         photo_box.pack_propagate(False)
@@ -87,7 +90,7 @@ class InventoryApp(core.InventoryApp):
         ).pack(fill="x", padx=2)
 
         filters = ttk.LabelFrame(outer, text=" Αναζήτηση και φίλτρα ", padding=10)
-        filters.pack(fill="x", pady=(0, 10))
+        filters.grid(row=2, column=0, sticky="ew", pady=(0, 8))
 
         self.search_var = tk.StringVar()
         ttk.Label(filters, text="Γενική αναζήτηση").grid(row=0, column=0, sticky="w", padx=4)
@@ -120,7 +123,9 @@ class InventoryApp(core.InventoryApp):
             filters.columnconfigure(i, weight=1 if i < 4 else 0)
 
         table_frame = ttk.Frame(outer)
-        table_frame.pack(fill="both", expand=True)
+        table_frame.grid(row=3, column=0, sticky="nsew")
+        table_frame.rowconfigure(0, weight=1)
+        table_frame.columnconfigure(0, weight=1)
 
         headings = {
             "name": "Ονομασία υλικού",
@@ -147,13 +152,12 @@ class InventoryApp(core.InventoryApp):
         self.tree.grid(row=0, column=0, sticky="nsew")
         yscroll.grid(row=0, column=1, sticky="ns")
         xscroll.grid(row=1, column=0, sticky="ew")
-        table_frame.rowconfigure(0, weight=1)
-        table_frame.columnconfigure(0, weight=1)
         self.tree.bind("<<TreeviewSelect>>", self.on_tree_select)
         self.tree.bind("<Double-1>", self.on_tree_select)
 
+        # Σταθερό κάτω toolbar: δεν κρύβεται όταν το παράθυρο δεν είναι maximized.
         bottom = ttk.Frame(outer)
-        bottom.pack(fill="x", pady=(10, 0))
+        bottom.grid(row=4, column=0, sticky="ew", pady=(8, 0))
         ttk.Button(bottom, text="Εκτύπωση φίλτρου", command=self.print_filtered).pack(side="left", padx=(0, 6))
         ttk.Button(bottom, text="Εκτύπωση επιλεγμένων", command=self.print_selected).pack(side="left", padx=(0, 6))
         ttk.Button(bottom, text="Εξαγωγή CSV", command=self.export_csv).pack(side="left")
