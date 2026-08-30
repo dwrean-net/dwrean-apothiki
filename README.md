@@ -1,6 +1,13 @@
 # dwrean Αποθήκη
 
+[![Τελευταία έκδοση](https://img.shields.io/github/v/release/dwrean-net/dwrean-apothiki?label=έκδοση&color=1f6feb)](https://github.com/dwrean-net/dwrean-apothiki/releases/latest)
+[![Συνολικές λήψεις](https://img.shields.io/github/downloads/dwrean-net/dwrean-apothiki/total?label=λήψεις&color=2ea44f)](https://github.com/dwrean-net/dwrean-apothiki/releases)
+[![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-0078d4?logo=windows)](https://github.com/dwrean-net/dwrean-apothiki/releases/latest)
+[![Portable](https://img.shields.io/badge/Portable-Ναι-2ea44f)](https://github.com/dwrean-net/dwrean-apothiki/releases/latest)
+
 Το **dwrean Αποθήκη** είναι μια δωρεάν portable εφαρμογή για Windows που βοηθά στην απλή καταχώριση και διαχείριση υλικών αποθήκης, χωρίς εγκατάσταση και χωρίς εξωτερικό server.
+
+[Κατέβασε την τελευταία έκδοση για Windows](https://github.com/dwrean-net/dwrean-apothiki/releases/latest)
 
 ## Δυνατότητες
 
